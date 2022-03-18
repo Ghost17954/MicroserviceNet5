@@ -11,7 +11,7 @@ namespace Catalog.API.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class CatalogController : Controller
+    public class CatalogController : ControllerBase
     {
         private readonly IProductRepository _productRespository;
         public CatalogController(IProductRepository productRepository)

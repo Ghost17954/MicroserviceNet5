@@ -1,6 +1,4 @@
-using Basket.API.GrpcService;
-using Basket.API.Repository;
-using Discount.Grpc.Protos;
+using Discount.API.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Basket.API
+namespace Discount.API
 {
     public class Startup
     {
@@ -25,30 +23,25 @@ namespace Basket.API
 
         public IConfiguration Configuration { get; }
 
+        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddStackExchangeRedisCache(option =>
-            {
-                option.Configuration = Configuration.GetValue<string>("CacheSettings:ConnectionStrings");
-            });
-            services.AddScoped<IBasketRepository, BasketRepository>();
-            services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(o => o.Address = new Uri(Configuration["GrpcSettings:DiscountGrpcUrl"]));
-            var uri = Configuration["GrpcSettings:DiscountGrpcUrl"];
-            services.AddScoped<DiscountGrpcService>();
-            services.AddControllers(); 
+            services.AddScoped<IDiscountRepository, DiscountRepository>();
+            services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Basket.API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Discount.API", Version = "v1" });
             });
         }
 
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Basket.API v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Discount.API v1"));
             }
 
             app.UseRouting();
