@@ -14,6 +14,15 @@ services:
     restart: always    
     ports:
       - "6379:6379"
+  
+  orderingdb:
+    container_name: orderingdb
+    environment:
+      - SA_PASSWORD=password1234
+      - ACCEPT_EULA=Y
+    restart: always
+    ports:
+      - "1433:1433"  
       
   pgadmin:
     container_name: pgadmin
@@ -80,4 +89,13 @@ services:
       - "DatabaseSettings:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDB;User Id=admin;Password=admin@1234"
     ports:
       - "8003:80"
+
+
+  ordering.api:
+    container_name: ordering.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings:OrderingConnectionString=Server=orderingdb;Database=Orderdb;User Id=sa;Password=password1234"
+    ports:
+      - "8004:80"
 
