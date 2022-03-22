@@ -22,7 +22,14 @@ services:
       - ACCEPT_EULA=Y
     restart: always
     ports:
-      - "1433:1433"  
+      - "1433:1433"
+      
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"      
       
   pgadmin:
     container_name: pgadmin
@@ -62,9 +69,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "CacheSettings:ConnectionStrings=basketdb:6379"
-      - "GrpcSettings:DiscountGrpcUrl=http://discount.grpc:5003"
+      - "GrpcSettings:DiscountGrpcUrl=http://discount.grpc"
+      - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
     depends_on:
       - basketdb
+      - rabbitmq
     ports:
       - "8001:80"
 
@@ -96,6 +105,11 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "ConnectionStrings:OrderingConnectionString=Server=orderingdb;Database=Orderdb;User Id=sa;Password=password1234"
+      - "EmailSettings:FromAddress=test@gmail.com;APIKey=;FromName=Ghost"
+      - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
+    depends_on:
+      - orderingdb
+      - rabbitmq
     ports:
       - "8004:80"
 
